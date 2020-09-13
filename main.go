@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -25,16 +24,15 @@ func main() {
 	r := gin.Default()
 
 	r.GET("/", func(c *gin.Context) {
-		var currentDate = time.Now().Format("2006-01-02 15:04:05")
 
+		var memberName = uuid.New().String()
 		var member = redis.Z{
-			Member: uuid.New().String(),
+			Member: memberName,
 			Score:  cast.ToFloat64(time.Now().Unix()),
 		}
 
-		index, err := rdb.ZRank(c, "qps:records", currentDate).Result()
+		_, err := rdb.ZRank(c, "qps:records", memberName).Result()
 
-		fmt.Println(index)
 		if err == nil {
 			member.Score += 1
 		}
